@@ -5,3 +5,7 @@ https://products.wolframalpha.com/query-recognizer/documentation/
 
 https://products.wolframalpha.com/api/libraries.html
 https://products.wolframalpha.com/api/libraries/javascript/
+
+https://products.wolframalpha.com/api/
+generate a new API token
+https://developer.wolframalpha.com/portal/myapps/
