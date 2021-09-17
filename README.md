@@ -18,7 +18,7 @@ Adding this bot to your server allows you to get the functionality of this assis
 
 ## Hosting This Bot Yourself
 
-Hosting this bot yourself is more involving, but allows you to customize it entirely. Here are the steps to do so:
+Hosting this bot yourself is more involving, but allows you to customize it entirely. Note that you will need NodeJS 16.6 or higher for this to work. Here are the steps to do so:
 
 1. Get a Wolfram|Alpha API key through the [developer portal](https://developer.wolframalpha.com/portal/myapps/) by signing in from the [API page](https://products.wolframalpha.com/api/)
 2. Create a Discord Bot
