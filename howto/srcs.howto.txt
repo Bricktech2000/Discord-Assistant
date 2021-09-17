@@ -1,0 +1,7 @@
+https://products.wolframalpha.com/api/
+https://products.wolframalpha.com/api/documentation/
+https://products.wolframalpha.com/short-answers-api/documentation/
+https://products.wolframalpha.com/query-recognizer/documentation/
+
+https://products.wolframalpha.com/api/libraries.html
+https://products.wolframalpha.com/api/libraries/javascript/
