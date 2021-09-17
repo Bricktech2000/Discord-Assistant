@@ -1,21 +1,23 @@
 const { exit } = require('process');
 const WolframAlphaAPI = require('wolfram-alpha-api');
-
 const { Client, Intents } = require('discord.js');
-const client = new Client({
-  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
-});
 
 if (process.argv.length != 4) {
   console.log('Usage: node . WOLFRAMALPHA_API_KEY DISCORD_BOT_TOKEN');
   exit(1);
 }
 
-console.log('Using WolframAlpha API key: ' + process.argv[2]);
-console.log('Using Discord bot token: ' + process.argv[3]);
+const wolframAlphaApi = process.argv[2];
+const discordBotToken = process.argv[3];
+console.log('Using WolframAlpha API key: ' + wolframAlphaApi);
+console.log('Using Discord bot token: ' + discordBotToken);
 
 // https://nodejs.org/en/knowledge/command-line/how-to-parse-command-line-arguments/
-const waApi = WolframAlphaAPI(process.argv[2]);
+const waApi = WolframAlphaAPI(wolframAlphaApi);
+
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+});
 
 client.on('ready', () => {
   console.log('Ready.');
@@ -36,4 +38,4 @@ client.on('messageCreate', (msg) => {
     .catch(() => null);
 });
 
-client.login(process.argv[3]);
+client.login(discordBotToken);
