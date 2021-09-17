@@ -26,12 +26,12 @@ client.on('messageCreate', (msg) => {
   if (msg.author.id === client.user.id) return;
   if (msg.content.split(' ').length < 3) return;
 
+  const bold = (text) => `**${text}**`;
+
   waApi
     .getShort(msg.content)
     .then((res) =>
-      msg.reply(
-        '**' + res.replaceAll('Wolfram Alpha', 'Discord Assistant') + '**'
-      )
+      msg.reply(bold(res.replaceAll('Wolfram Alpha', 'Discord Assistant')))
     )
     .catch(() => null);
 });
