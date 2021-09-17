@@ -18,7 +18,7 @@ console.log('Using Discord bot token: ' + process.argv[3]);
 const waApi = WolframAlphaAPI(process.argv[2]);
 
 client.on('ready', () => {
-  console.log('Bot status: READY');
+  console.log('Ready.');
 });
 
 client.on('messageCreate', (msg) => {
@@ -28,9 +28,12 @@ client.on('messageCreate', (msg) => {
 
   waApi
     .getShort(msg.content)
-    .then((res) => msg.reply(res))
-    // .then(console.log)
-    .catch(console.error);
+    .then((res) =>
+      msg.reply(
+        '**' + res.replaceAll('Wolfram Alpha', 'Discord Assistant') + '**'
+      )
+    )
+    .catch(() => null);
 });
 
 client.login(process.argv[3]);

@@ -24,10 +24,6 @@ visit url in browser
 select server
 click: authorize
 
-go to server
-create role
-name: bot
-
 install nodejs 16 or higher
 https://stackoverflow.com/questions/68693319/why-am-i-getting-a-referenceerror-abortcontroller-is-not-defined-in-discord-js
 https://discordjs.guide/popular-topics/intents.html#privileged-intents
