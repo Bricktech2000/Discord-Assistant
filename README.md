@@ -32,6 +32,6 @@ Hosting this bot yourself is more involving, but allows you to customize it enti
 3. Host the bot
    1. Clone this repository
    2. Install the necessary packages: `npm install`
-   3. Run the program by passing the Wolfram|Alpha API key and the Discord Bot Token through command line parameters: `node . WOLFRAMALPHA_API_KEY DISCORD_BOT_API_KEY`
+   3. Run the program by passing the Wolfram|Alpha API key and the Discord Bot Token through command line parameters: `node . WOLFRAMALPHA_API_KEY DISCORD_BOT_TOKEN`
 
 To get an invite link for the bot, head to the [Discord Developer Portal](https://discord.com/developers/applications), go to the _OAuth2_ tab, select _bot_ under the _URL Generator_ and copy the generated invite link.

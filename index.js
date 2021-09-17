@@ -7,7 +7,7 @@ const client = new Client({
 });
 
 if (process.argv.length != 4) {
-  console.log('Usage: node . WOLFRAMALPHA_API_KEY DISCORD_BOT_API_KEY');
+  console.log('Usage: node . WOLFRAMALPHA_API_KEY DISCORD_BOT_TOKEN');
   exit(1);
 }
 
