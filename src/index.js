@@ -80,6 +80,13 @@ const getEmbedFromPods = (pods) => {
     TimeOffsets: code,
     // Phrase: quote,
     // Rhyme: list,
+    GlobalMinimum: code,
+    GlobalMaximum: code,
+    IndefiniteIntegral: code,
+    Root: code,
+    ExpandedForm: code,
+    AlternateForm: code,
+    AlternateFormOfTheIntegral: code,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
@@ -143,11 +150,11 @@ client.on('messageCreate', (msg) => {
     // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
     // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
     if (res.pods === undefined) return;
-    console.log(res.pods);
     const reply = getEmbedFromPods(res.pods);
-    try {
-      msg.channel.send({ embeds: [reply] });
-    } catch (e) {}
+    if (reply.fields.length == 0) return;
+    console.log(res.pods);
+
+    msg.channel.send({ embeds: [reply] });
   });
 });
 
