@@ -164,6 +164,7 @@ client.on('messageCreate', (msg) => {
       'MusicAlbumData',
       'BoardGameData',
       'MusicWorkData',
+      'MovieData',
     ];
     if (
       res.pods.length > 1 &&
