@@ -62,9 +62,9 @@ const getEmbedFromPods = (pods) => {
     ScientificName: quote,
     WikipediaSummary: quote,
     // Synonyms: list,
-    Hypernym: list,
+    // Hypernym: list,
     // Anagram: quote,
-    SpeciesDataPhysicalProperties: quote,
+    SpeciesDataPhysicalProperties: mathtable,
     HumanComparisons: quote,
     DecimalApproximation: code,
     Numeric: code,
@@ -146,12 +146,13 @@ const definition = (text) =>
 client.on('messageCreate', (msg) => {
   // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
   if (msg.author.id === client.user.id) return;
-  if (msg.content.split(' ').length <= 2) return;
+  // if (msg.content.split(' ').length <= 2) return;
 
   waApi.getFull(msg.content).then((res) => {
     // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
     // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
     if (res.pods === undefined) return;
+    if (res.pods.length > 1 && res.pods[1].id.includes('Definition')) return;
     const reply = getEmbedFromPods(res.pods);
     if (reply.fields.length == 0) return;
     console.log(res.pods);
