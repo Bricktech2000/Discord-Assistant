@@ -1,6 +1,7 @@
 const { exit } = require('process');
 const WolframAlphaAPI = require('wolfram-alpha-api');
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageEmbed } = require('discord.js');
+const { PassThrough } = require('stream');
 
 if (process.argv.length != 4) {
   console.log('Usage: node . WOLFRAMALPHA_API_KEY DISCORD_BOT_TOKEN');
@@ -28,34 +29,63 @@ client.on('messageCreate', (msg) => {
   if (msg.author.id === client.user.id) return;
   if (msg.content.split(' ').length <= 2) return;
 
-  const quote = (text) => `> ${text.replaceAll('\n', '\n> ')}\n`;
-  const bold = (text) => `**${text}**`;
-  const code = (text) => `\`\`\`\n${text}\n\`\`\``;
-  const table = (text) => `> ${text.replaceAll('\n', '\n> ')}\n`;
+  const quote = (text) => [`> ${text.replaceAll('\n', '\n> ')}`];
+  const bold = (text) => [`**${text}**`];
+  const italic = (text) => [`_${text}_`];
+  const code = (text) => [`\`\`\`\n${text}\n\`\`\``];
+  const inline = (text) => [`\`${text}\``];
+  const nonempty = (text) => text || '\u200B';
+  const list = (text) => [`**-** ${text.split(' | ').join('\n**-** ')}`];
+  const table = (text, columnMap) => {
+    const columns = [];
+
+    for (var e = 0; e < columnMap.length; e++) {
+      if (columnMap[e] === null) continue;
+      columns.push('');
+      for (var line of text.split('\n')) {
+        const elements = line.split(' | ');
+        if (elements.length != columnMap.length) continue;
+        columns[columns.length - 1] += columnMap[e](elements[e]) + '\n';
+      }
+    }
+    console.log(columns);
+    return columns;
+  };
+  const mathtable = (text) => table(text, [(text) => text, inline]);
+  const definition = (text) =>
+    quote(
+      text
+        .split('\n')
+        .map(
+          (line) => bold(line.split(' | ')[1]) + ' - ' + line.split(' | ')[2]
+        )
+        .join('\n')
+    );
+
   // https://products.wolframalpha.com/api/explorer/
   const idMap = {
-    Definition: quote,
-    DefinitionPod: quote,
+    Definition: definition,
+    DefinitionPod: definition,
     BasicDefinitionPod: quote,
     Result: code,
     UnitConversion: code,
     IndefiniteIntegral: code,
-    TravelTimes: code,
-    Elemental2: table,
+    TravelTimes: mathtable,
+    Elemental2: mathtable,
     // Thermodynamics: code,
-    Material: table,
-    Electromagnetic: table,
+    Material: mathtable,
+    Electromagnetic: mathtable,
     // Chemical: code,
-    Atomic: table,
-    Abundance: table,
-    Nuclear: table,
+    Atomic: mathtable,
+    Abundance: mathtable,
+    Nuclear: mathtable,
     // Identifier: code,
-    BasicInformation: quote,
+    BasicInformation: mathtable,
     NotableFacts: quote,
-    ScientificContributions: quote,
+    ScientificContributions: list,
     NetWorth: quote,
     // WikipediaSummary: quote,
-    NutritionLabelSingle: table,
+    // NutritionLabelSingle: table,
     // Calories: code,
     // Carbohydrates: code,
     // Fats: code,
@@ -63,41 +93,61 @@ client.on('messageCreate', (msg) => {
     // Vitamins: code,
     // Minerals: code,
     // Sterols: code,
-    AlcoholContent: code,
-    PhysicalProperties: code,
+    // AlcoholContent: code,
+    PhysicalProperties: mathtable,
     AgeDistribution: code,
     ScientificName: quote,
     WikipediaSummary: quote,
-    Synonyms: quote,
-    Hypernym: quote,
+    // Synonyms: list,
+    Hypernym: list,
     // Anagram: quote,
     SpeciesDataPhysicalProperties: quote,
     HumanComparisons: quote,
     DecimalApproximation: code,
     Numeric: code,
     ContinuedFraction: code,
-    InstantaneousWeather: table,
-    WeatherForecast: table,
-    LocalTemperature: table,
-    WeatherStationInformation: table,
+    InstantaneousWeather: mathtable,
+    WeatherForecast: mathtable,
+    LocalTemperature: mathtable,
+    WeatherStationInformation: mathtable,
+    Properties: mathtable,
+    StatementPod: quote,
+    FormulasPod: quote,
+    PropertiesPod: list,
+    TimeOffsets: code,
+    // Phrase: quote,
+    // Rhyme: list,
   };
 
   waApi.getFull(msg.content).then((res) => {
-    var reply = '';
+    // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
+    // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
+    const reply = new MessageEmbed().setColor('#0088ff');
     const pods = res.pods;
     console.log(pods);
     if (pods === undefined) return;
 
     for (var pod of pods) {
       for (var id of pod.id.split(':')) {
-        if (idMap[id] !== undefined && pod.title !== 'Response') {
-          reply += bold(pod.title) + '\n' + idMap[id](pod.subpods[0].plaintext);
+        if (idMap[id] === undefined || pod.title === 'Response') continue;
+        const values = idMap[id](
+          pod.subpods[0].plaintext
+            .replaceAll('Wolfram Alpha', 'Discord Assistant')
+            .replace(/[ \n]\(.*?\)/g, '')
+        );
+        for (var value of values) {
+          reply.addFields({
+            name: nonempty(value == values[0] ? pod.title : ''),
+            value: nonempty(value),
+            inline: values.length > 1,
+          });
         }
       }
     }
-    if (reply === '') return;
     console.log(reply);
-    msg.reply(reply.replaceAll('Wolfram Alpha', 'Discord Assistant'));
+    try {
+      msg.channel.send({ embeds: [reply] });
+    } catch (e) {}
   });
   // .catch(() => null);
 });
