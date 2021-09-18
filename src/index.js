@@ -105,6 +105,8 @@ const getEmbedFromPods = (pods) => {
           inline: values.length > 1,
         });
       }
+      values.length > 1 &&
+        reply.addFields({ name: nonempty(), value: nonempty() }); //fix inline fields
     }
   }
   return reply;
