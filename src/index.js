@@ -163,6 +163,7 @@ client.on('messageCreate', (msg) => {
       'CompanyInformation',
       'MusicAlbumData',
       'BoardGameData',
+      'MusicWorkData',
     ];
     if (
       res.pods.length > 1 &&
