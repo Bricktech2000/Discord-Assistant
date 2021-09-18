@@ -87,6 +87,10 @@ const getEmbedFromPods = (pods) => {
     ExpandedForm: code,
     AlternateForm: code,
     AlternateFormOfTheIntegral: code,
+    BasicUnitDimensions: code,
+    CompanyManagement: quote,
+    // CorrespondingQuantity: code,
+    Value: code,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
@@ -152,7 +156,19 @@ client.on('messageCreate', (msg) => {
     // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
     // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
     if (res.pods === undefined) return;
-    if (res.pods.length > 1 && res.pods[1].id.includes('Definition')) return;
+    if (msg.content.split(' ').length <= 1) return;
+    // https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript/29447130
+    const ignore = [
+      'Definition',
+      'CompanyInformation',
+      'MusicAlbumData',
+      'BoardGameData',
+    ];
+    if (
+      res.pods.length > 1 &&
+      ignore.some((value) => res.pods[1].id.includes(value))
+    )
+      return;
     const reply = getEmbedFromPods(res.pods);
     if (reply.fields.length == 0) return;
     console.log(res.pods);
