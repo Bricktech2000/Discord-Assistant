@@ -24,44 +24,7 @@ client.on('ready', () => {
   console.log('Ready.');
 });
 
-client.on('messageCreate', (msg) => {
-  // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
-  if (msg.author.id === client.user.id) return;
-  if (msg.content.split(' ').length <= 2) return;
-
-  const quote = (text) => [`> ${text.replaceAll('\n', '\n> ')}`];
-  const bold = (text) => [`**${text}**`];
-  const italic = (text) => [`_${text}_`];
-  const code = (text) => [`\`\`\`\n${text}\n\`\`\``];
-  const inline = (text) => [`\`${text}\``];
-  const nonempty = (text) => text || '\u200B';
-  const list = (text) => [`**-** ${text.split(' | ').join('\n**-** ')}`];
-  const table = (text, columnMap) => {
-    const columns = [];
-
-    for (var e = 0; e < columnMap.length; e++) {
-      if (columnMap[e] === null) continue;
-      columns.push('');
-      for (var line of text.split('\n')) {
-        const elements = line.split(' | ');
-        if (elements.length != columnMap.length) continue;
-        columns[columns.length - 1] += columnMap[e](elements[e]) + '\n';
-      }
-    }
-    console.log(columns);
-    return columns;
-  };
-  const mathtable = (text) => table(text, [(text) => text, inline]);
-  const definition = (text) =>
-    quote(
-      text
-        .split('\n')
-        .map(
-          (line) => bold(line.split(' | ')[1]) + ' - ' + line.split(' | ')[2]
-        )
-        .join('\n')
-    );
-
+const getEmbedFromPods = (pods) => {
   // https://products.wolframalpha.com/api/explorer/
   const idMap = {
     Definition: definition,
@@ -119,37 +82,73 @@ client.on('messageCreate', (msg) => {
     // Rhyme: list,
   };
 
+  const reply = new MessageEmbed().setColor('#0088ff');
+  for (var pod of pods) {
+    for (var id of pod.id.split(':')) {
+      if (idMap[id] === undefined || pod.title === 'Response') continue;
+      const values = idMap[id](
+        pod.subpods[0].plaintext
+          .replaceAll('Wolfram Alpha', 'Discord Assistant')
+          .replace(/[ \n]\(.*?\)/g, '')
+      );
+      for (var value of values) {
+        reply.addFields({
+          name: nonempty(value == values[0] ? pod.title : ''),
+          value: nonempty(value),
+          inline: values.length > 1,
+        });
+      }
+    }
+  }
+  return reply;
+};
+
+const quote = (text) => [`> ${text.replaceAll('\n', '\n> ')}`];
+const bold = (text) => [`**${text}**`];
+const italic = (text) => [`_${text}_`];
+const code = (text) => [`\`\`\`\n${text}\n\`\`\``];
+const inline = (text) => [`\`${text}\``];
+const nonempty = (text) => text || '\u200B';
+const list = (text) => [`**-** ${text.split(' | ').join('\n**-** ')}`];
+const table = (text, columnMap) => {
+  const columns = [];
+
+  for (var e = 0; e < columnMap.length; e++) {
+    if (columnMap[e] === null) continue;
+    columns.push('');
+    for (var line of text.split('\n')) {
+      const elements = line.split(' | ');
+      if (elements.length != columnMap.length) continue;
+      columns[columns.length - 1] += columnMap[e](elements[e]) + '\n';
+    }
+  }
+  console.log(columns);
+  return columns;
+};
+const mathtable = (text) => table(text, [(text) => text, inline]);
+const definition = (text) =>
+  quote(
+    text
+      .split('\n')
+      .map((line) => bold(line.split(' | ')[1]) + ' - ' + line.split(' | ')[2])
+      .join('\n')
+  );
+
+client.on('messageCreate', (msg) => {
+  // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
+  if (msg.author.id === client.user.id) return;
+  if (msg.content.split(' ').length <= 2) return;
+
   waApi.getFull(msg.content).then((res) => {
     // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
     // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
-    const reply = new MessageEmbed().setColor('#0088ff');
-    const pods = res.pods;
-    console.log(pods);
-    if (pods === undefined) return;
-
-    for (var pod of pods) {
-      for (var id of pod.id.split(':')) {
-        if (idMap[id] === undefined || pod.title === 'Response') continue;
-        const values = idMap[id](
-          pod.subpods[0].plaintext
-            .replaceAll('Wolfram Alpha', 'Discord Assistant')
-            .replace(/[ \n]\(.*?\)/g, '')
-        );
-        for (var value of values) {
-          reply.addFields({
-            name: nonempty(value == values[0] ? pod.title : ''),
-            value: nonempty(value),
-            inline: values.length > 1,
-          });
-        }
-      }
-    }
-    console.log(reply);
+    if (res.pods === undefined) return;
+    console.log(res.pods);
+    const reply = getEmbedFromPods(res.pods);
     try {
       msg.channel.send({ embeds: [reply] });
     } catch (e) {}
   });
-  // .catch(() => null);
 });
 
 client.login(discordBotToken);
