@@ -12,7 +12,6 @@ const discordBotToken = process.argv[3];
 console.log('Using WolframAlpha API key: ' + wolframAlphaApi);
 console.log('Using Discord bot token: ' + discordBotToken);
 
-// https://nodejs.org/en/knowledge/command-line/how-to-parse-command-line-arguments/
 const waApi = WolframAlphaAPI(wolframAlphaApi);
 
 const client = new Client({
@@ -34,35 +33,19 @@ const getEmbedFromPods = (pods) => {
     IndefiniteIntegral: code,
     TravelTimes: mathtable,
     Elemental2: mathtable,
-    // Thermodynamics: code,
     Material: mathtable,
     Electromagnetic: mathtable,
-    // Chemical: code,
     Atomic: mathtable,
     Abundance: mathtable,
     Nuclear: mathtable,
-    // Identifier: code,
     BasicInformation: mathtable,
     NotableFacts: quote,
     ScientificContributions: list,
     NetWorth: quote,
-    // WikipediaSummary: quote,
-    // NutritionLabelSingle: table,
-    // Calories: code,
-    // Carbohydrates: code,
-    // Fats: code,
-    // Protein: code,
-    // Vitamins: code,
-    // Minerals: code,
-    // Sterols: code,
-    // AlcoholContent: code,
     PhysicalProperties: mathtable,
     AgeDistribution: code,
     ScientificName: quote,
     WikipediaSummary: quote,
-    // Synonyms: list,
-    // Hypernym: list,
-    // Anagram: quote,
     SpeciesDataPhysicalProperties: mathtable,
     HumanComparisons: quote,
     DecimalApproximation: code,
@@ -77,8 +60,6 @@ const getEmbedFromPods = (pods) => {
     FormulasPod: quote,
     PropertiesPod: list,
     TimeOffsets: code,
-    // Phrase: quote,
-    // Rhyme: list,
     GlobalMinimum: code,
     GlobalMaximum: code,
     IndefiniteIntegral: code,
@@ -88,11 +69,9 @@ const getEmbedFromPods = (pods) => {
     AlternateFormOfTheIntegral: code,
     BasicUnitDimensions: code,
     CompanyManagement: quote,
-    // CorrespondingQuantity: code,
     Value: code,
     ConversionToOtherUnits: codetable,
     ConversionFromOtherUnits: codetable,
-    // UnitSystem: list,
     UnitType: quote,
   };
 
@@ -154,7 +133,6 @@ const definition = (text) =>
 client.on('messageCreate', (msg) => {
   // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
   if (msg.author.id === client.user.id) return;
-  // if (msg.content.split(' ').length <= 2) return;
 
   waApi.getFull(msg.content).then((res) => {
     // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
