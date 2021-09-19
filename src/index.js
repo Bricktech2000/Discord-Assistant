@@ -75,6 +75,9 @@ const getEmbedFromPods = (pods) => {
     UnitType: quote,
     BasalMetabolicRate: code,
     EnergyExpenditure: mathtable,
+    RealSolution: code,
+    SymbolicSolution: code,
+    AlternateForm: code,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
