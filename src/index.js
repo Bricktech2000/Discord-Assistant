@@ -91,6 +91,9 @@ const getEmbedFromPods = (pods) => {
     CompanyManagement: quote,
     // CorrespondingQuantity: code,
     Value: code,
+    ConversionToOtherUnits: codetable,
+    ConversionFromOtherUnits: codetable,
+    UnitSystem: quote,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
@@ -117,10 +120,10 @@ const getEmbedFromPods = (pods) => {
 };
 
 const quote = (text) => [`> ${text.replaceAll('\n', '\n> ')}`];
-const bold = (text) => [`**${text}**`];
-const italic = (text) => [`_${text}_`];
-const code = (text) => [`\`\`\`\n${text}\n\`\`\``];
-const inline = (text) => [`\`${text}\``];
+const bold = (text) => [`**${nonempty(text)}**`];
+const italic = (text) => [`_${nonempty(text)}_`];
+const code = (text) => [`\`\`\`\n${nonempty(text)}\n\`\`\``];
+const inline = (text) => [`\`${nonempty(text)}\``];
 const nonempty = (text) => text || '\u200B';
 const list = (text) => [`**-** ${text.split(' | ').join('\n**-** ')}`];
 const table = (text, columnMap) => {
@@ -139,6 +142,7 @@ const table = (text, columnMap) => {
   return columns;
 };
 const mathtable = (text) => table(text, [(text) => text, inline]);
+const codetable = (text) => table(text, [inline, inline]);
 const definition = (text) =>
   quote(
     text
