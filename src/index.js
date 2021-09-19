@@ -95,7 +95,9 @@ const getEmbedFromPods = (pods) => {
         reply.addFields({ name: nonempty(), value: nonempty() }); //fix inline fields
     }
   }
-  return reply.setTitle(pods[0].subpods[0].plaintext);
+  if (reply.fields.length == 0) reply.setTitle("Sorry, I didn't get that.");
+  else reply.setTitle(pods[0].subpods[0].plaintext);
+  return reply;
 };
 
 const quote = (text) => [`> ${text.replaceAll('\n', '\n> ')}`];
@@ -133,12 +135,15 @@ const definition = (text) =>
 client.on('messageCreate', (msg) => {
   // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
   if (msg.author.id === client.user.id) return;
+  if (msg.content.split(' ').length <= 1) return;
+  const isMentioned = msg.mentions.members.first()?.id == client.user.id;
 
-  waApi.getFull(msg.content).then((res) => {
+  // https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#using-regular-expressions
+  waApi.getFull(msg.content.replace(/<@!?(\d+)>/g, '')).then((res) => {
     // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
     // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
-    if (res.pods === undefined) return;
-    if (msg.content.split(' ').length <= 1) return;
+    if (res.pods === undefined) res.pods = [];
+    console.log(res.pods);
     // https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript/29447130
     const ignore = [
       'Definition',
@@ -152,12 +157,12 @@ client.on('messageCreate', (msg) => {
     ];
     if (
       res.pods.length > 1 &&
-      ignore.some((value) => res.pods[1].id.includes(value))
+      ignore.some((value) => res.pods[1].id.includes(value)) &&
+      !isMentioned
     )
       return;
     const reply = getEmbedFromPods(res.pods);
-    if (reply.fields.length == 0) return;
-    console.log(res.pods);
+    if (reply.fields.length == 0 && !isMentioned) return;
 
     msg.channel.send({ embeds: [reply] });
   });
