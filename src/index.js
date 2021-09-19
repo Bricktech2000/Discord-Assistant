@@ -93,7 +93,8 @@ const getEmbedFromPods = (pods) => {
     Value: code,
     ConversionToOtherUnits: codetable,
     ConversionFromOtherUnits: codetable,
-    UnitSystem: quote,
+    // UnitSystem: list,
+    UnitType: quote,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
@@ -116,7 +117,7 @@ const getEmbedFromPods = (pods) => {
         reply.addFields({ name: nonempty(), value: nonempty() }); //fix inline fields
     }
   }
-  return reply;
+  return reply.setTitle(pods[0].subpods[0].plaintext);
 };
 
 const quote = (text) => [`> ${text.replaceAll('\n', '\n> ')}`];
