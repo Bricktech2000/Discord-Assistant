@@ -1,7 +1,6 @@
 const { exit } = require('process');
 const WolframAlphaAPI = require('wolfram-alpha-api');
 const { Client, Intents, MessageEmbed } = require('discord.js');
-const { PassThrough } = require('stream');
 
 if (process.argv.length != 4) {
   console.log('Usage: node . WOLFRAMALPHA_API_KEY DISCORD_BOT_TOKEN');
