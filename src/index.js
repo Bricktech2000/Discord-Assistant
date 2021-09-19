@@ -73,6 +73,8 @@ const getEmbedFromPods = (pods) => {
     ConversionToOtherUnits: codetable,
     ConversionFromOtherUnits: codetable,
     UnitType: quote,
+    BasalMetabolicRate: code,
+    EnergyExpenditure: mathtable,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
