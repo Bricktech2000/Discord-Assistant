@@ -126,12 +126,18 @@ const getEmbedFromPods = (pods) => {
     SymbolicSolution: code,
     AlternateForm: code,
     Solution: code,
+    Image: img,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
   for (var pod of pods) {
     for (var id of pod.id.split(':')) {
       if (idMap[id] === undefined || pod.title === 'Response') continue;
+      if (idMap[id] == img) {
+        console.log(id);
+        reply.setImage(pod.subpods[0].img.src);
+        continue;
+      }
       const values = idMap[id](
         pod.subpods[0].plaintext
           .replaceAll('Wolfram Alpha', 'Discord Assistant')
@@ -184,3 +190,4 @@ const definition = (text) =>
       .map((line) => bold(line.split(' | ')[1]) + ' - ' + line.split(' | ')[2])
       .join('\n')
   );
+const img = 'Image';
