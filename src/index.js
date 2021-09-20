@@ -13,7 +13,6 @@ console.log('Using WolframAlpha API key: ' + wolframAlphaApi);
 console.log('Using Discord bot token: ' + discordBotToken);
 
 const waApi = WolframAlphaAPI(wolframAlphaApi);
-
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
@@ -21,6 +20,52 @@ const client = new Client({
 client.on('ready', () => {
   console.log('Ready.');
 });
+
+client.on('messageCreate', async (msg) => {
+  const reply = await getReplyFromMessage(msg);
+  if (reply !== undefined) msg.channel.send({ embeds: [reply] });
+});
+
+client.login(discordBotToken);
+
+const getReplyFromMessage = async (msg) => {
+  // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
+  if (msg.author.id === client.user.id) return;
+  if (msg.content.split(' ').length <= 1) return;
+  const isMentioned = msg.mentions.members.first()?.id == client.user.id;
+
+  return new Promise((resolve) => {
+    // https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#using-regular-expressions
+    waApi.getFull(msg.content.replace(/<@!?(\d+)>/g, '')).then((res) => {
+      // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
+      // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
+      if (res.pods === undefined) res.pods = [];
+      console.log(res.pods);
+      // https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript/29447130
+      const ignore = [
+        'Definition',
+        'CompanyInformation',
+        'MusicAlbumData',
+        'BoardGameData',
+        'MusicWorkData',
+        'MovieData',
+        'BookData',
+        'TelevisionProgramData',
+        'AlternateNamesPod',
+      ];
+      if (
+        res.pods.length > 1 &&
+        ignore.some((value) => res.pods[1].id.includes(value)) &&
+        !isMentioned
+      )
+        return;
+      const reply = getEmbedFromPods(res.pods);
+      if (reply.fields.length == 0 && !isMentioned) return;
+
+      resolve(reply);
+    });
+  });
+};
 
 const getEmbedFromPods = (pods) => {
   // https://products.wolframalpha.com/api/explorer/
@@ -136,42 +181,3 @@ const definition = (text) =>
       .map((line) => bold(line.split(' | ')[1]) + ' - ' + line.split(' | ')[2])
       .join('\n')
   );
-
-client.on('messageCreate', (msg) => {
-  // https://stackoverflow.com/questions/49663283/how-to-detect-if-the-author-of-a-message-was-a-discord-bot/49667223#:~:text=If%20you%20want%20to%20check%20if%20the%20message%20author%20is,going%20if%20its%20another%20bot.
-  if (msg.author.id === client.user.id) return;
-  if (msg.content.split(' ').length <= 1) return;
-  const isMentioned = msg.mentions.members.first()?.id == client.user.id;
-
-  // https://discordjs.guide/miscellaneous/parsing-mention-arguments.html#using-regular-expressions
-  waApi.getFull(msg.content.replace(/<@!?(\d+)>/g, '')).then((res) => {
-    // https://discord.js.org/#/docs/main/stable/class/MessageEmbed
-    // https://discordjs.guide/popular-topics/embeds.html#using-the-embed-constructor
-    if (res.pods === undefined) res.pods = [];
-    console.log(res.pods);
-    // https://stackoverflow.com/questions/16312528/check-if-an-array-contains-any-element-of-another-array-in-javascript/29447130
-    const ignore = [
-      'Definition',
-      'CompanyInformation',
-      'MusicAlbumData',
-      'BoardGameData',
-      'MusicWorkData',
-      'MovieData',
-      'BookData',
-      'TelevisionProgramData',
-      'AlternateNamesPod',
-    ];
-    if (
-      res.pods.length > 1 &&
-      ignore.some((value) => res.pods[1].id.includes(value)) &&
-      !isMentioned
-    )
-      return;
-    const reply = getEmbedFromPods(res.pods);
-    if (reply.fields.length == 0 && !isMentioned) return;
-
-    msg.channel.send({ embeds: [reply] });
-  });
-});
-
-client.login(discordBotToken);
