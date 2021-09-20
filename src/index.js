@@ -124,6 +124,7 @@ const getEmbedFromPods = (pods) => {
     RealSolution: code,
     SymbolicSolution: code,
     AlternateForm: code,
+    Solution: code,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
