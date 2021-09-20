@@ -52,6 +52,7 @@ const getReplyFromMessage = async (msg) => {
         'BookData',
         'TelevisionProgramData',
         'AlternateNamesPod',
+        'MusicActData',
       ];
       if (
         res.pods.length > 1 &&
