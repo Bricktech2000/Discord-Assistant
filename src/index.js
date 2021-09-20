@@ -159,6 +159,7 @@ client.on('messageCreate', (msg) => {
       'MovieData',
       'BookData',
       'TelevisionProgramData',
+      'AlternateNamesPod',
     ];
     if (
       res.pods.length > 1 &&
