@@ -127,6 +127,10 @@ const getEmbedFromPods = (pods) => {
     AlternateForm: code,
     Solution: code,
     Image: img,
+    ESRBRatingInformation: mathtable,
+    NewVideoGame: list,
+    BasicProperties: mathtable,
+    SupportingApplications: list,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
@@ -141,7 +145,7 @@ const getEmbedFromPods = (pods) => {
       const values = idMap[id](
         pod.subpods[0].plaintext
           .replaceAll('Wolfram Alpha', 'Discord Assistant')
-          .replace(/[ \n]\(.*?\)/g, '')
+          .replace(/[ \n]\([a-z ]*?\)/g, '')
       );
       for (var value of values) {
         reply.addFields({
@@ -154,8 +158,10 @@ const getEmbedFromPods = (pods) => {
         reply.addFields({ name: nonempty(), value: nonempty() }); //fix inline fields
     }
   }
-  if (reply.fields.length == 0) reply.setTitle("Sorry, I didn't get that.");
-  else reply.setTitle(pods[0].subpods[0].plaintext);
+  if (reply.fields.length == 0) {
+    reply.setImage(null);
+    reply.setTitle("Sorry, I didn't get that.");
+  } else reply.setTitle(pods[0].subpods[0].plaintext);
   return reply;
 };
 
