@@ -131,6 +131,8 @@ const getEmbedFromPods = (pods) => {
     NewVideoGame: list,
     BasicProperties: mathtable,
     SupportingApplications: list,
+    Equation: mathtable,
+    InputValue: mathtable,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
