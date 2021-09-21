@@ -133,6 +133,7 @@ const getEmbedFromPods = (pods) => {
     SupportingApplications: list,
     Equation: mathtable,
     InputValue: mathtable,
+    Biography: mathtable,
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
