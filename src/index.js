@@ -147,7 +147,11 @@ const getEmbedFromPods = (pods) => {
       }
       const values = idMap[id](
         pod.subpods[0].plaintext
-          .replaceAll('Wolfram Alpha', 'Discord Assistant')
+          .replace(/Wolfram.?Alpha/g, 'Discord Assistant')
+          .replace(
+            /Stephen Wolfram and his team/g,
+            'Emilien Breton through the Wolfram|Alpha API'
+          )
           .replace(/[ \n]\([a-z ]*?\)/g, '')
       );
       for (var value of values) {
