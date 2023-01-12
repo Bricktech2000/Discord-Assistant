@@ -137,8 +137,8 @@ const getEmbedFromPods = (pods) => {
   };
 
   const reply = new MessageEmbed().setColor('#0088ff');
-  for (var pod of pods) {
-    for (var id of pod.id.split(':')) {
+  for (let pod of pods) {
+    for (let id of pod.id.split(':')) {
       if (idMap[id] === undefined || pod.title === 'Response') continue;
       if (idMap[id] == img) {
         console.log(id);
@@ -154,7 +154,7 @@ const getEmbedFromPods = (pods) => {
           )
           .replace(/[ \n]\([a-z ]*?\)/g, '')
       );
-      for (var value of values) {
+      for (let value of values) {
         reply.addFields({
           name: nonempty(value == values[0] ? pod.title : ''),
           value: nonempty(value),
@@ -182,10 +182,10 @@ const list = (text) => [`**-** ${text.split(' | ').join('\n**-** ')}`];
 const table = (text, columnMap) => {
   const columns = [];
 
-  for (var e = 0; e < columnMap.length; e++) {
+  for (let e = 0; e < columnMap.length; e++) {
     if (columnMap[e] === null) continue;
     columns.push('');
-    for (var line of text.split('\n')) {
+    for (let line of text.split('\n')) {
       const elements = line.split(' | ');
       if (elements.length != columnMap.length) continue;
       columns[columns.length - 1] += columnMap[e](elements[e]) + '\n';
