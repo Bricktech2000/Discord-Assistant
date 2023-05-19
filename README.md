@@ -1,6 +1,6 @@
 # Discord Asssistant
 
-A Discord bot that automatically answers technical questions using the Wolfram|Alpha API
+_A Discord bot that automatically answers technical questions using the Wolfram|Alpha API_
 
 ## Overview
 
